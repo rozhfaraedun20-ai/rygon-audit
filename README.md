@@ -1,8 +1,8 @@
-# RYGON AUDIT CANDIDATE 2 — NOT YET INDEPENDENTLY AUDITED
+# RYGON AUDIT CANDIDATE 3 — NOT YET INDEPENDENTLY AUDITED
 
 > [!WARNING]
-> **PRE-MAINNET SECURITY CANDIDATE 2 — NOT YET INDEPENDENTLY AUDITED**  
-> This repository contains the candidate smart contracts for **Rygon (RYG)** submitted for independent third-party security review. Candidate 2 supersedes Candidate 1 for documentation corrections; smart contract bytecode and Solidity logic are 100% byte-for-byte identical to Candidate 1. It has **NOT** yet received an independent third-party security audit.  
+> **PRE-MAINNET SECURITY CANDIDATE 3 — NOT YET INDEPENDENTLY AUDITED**  
+> This repository contains the candidate smart contracts for **Rygon (RYG)** submitted for independent third-party security review. Candidate 3 supersedes Candidate 2 for documentation corrections; smart contract bytecode and Solidity logic are 100% byte-for-byte identical to Candidate 1 and Candidate 2. It has **NOT** yet received an independent third-party security audit.  
 > **DO NOT DEPLOY TO MAINNET. DO NOT CREATE LIQUIDITY. DO NOT DEPOSIT REAL FUNDS.**
 
 ---
@@ -11,7 +11,7 @@
 
 - **Project / Brand:** Rygon
 - **Token Symbol:** RYG
-- **Audit Candidate:** Candidate 2 (`rygon-audit-candidate-2`)
+- **Audit Candidate:** Candidate 3 (`rygon-audit-candidate-3`)
 - **Target Network:** Base Mainnet (EVM / Chain ID 8453)
 - **Active Testnet Network:** Base Sepolia (EVM / Chain ID 84532)
 - **Date:** October 2026
@@ -27,7 +27,10 @@
 2. **Burn Does NOT Restore Mint Capacity:**
    - `totalMinted` is strictly monotonic non-decreasing. Burning tokens via `burn()` or `burnFrom()` reduces `totalSupply()` but does **NOT** decrement `totalMinted`.
 3. **No Role Can Override the Cap:**
-   - The `_mintWithCapCheck()` function reverts unconditionally if `totalMinted + amount > MAX_TOTAL_MINT_CAP`. Neither `MINTER_ROLE`, `DEFAULT_ADMIN_ROLE`, nor `TIMELOCK` can bypass this check.
+   - Both mint pathways enforce cap compliance explicitly:
+     - In `mint()`: `require(totalMinted + amount <= cap(), "Rygon: total minted exceeds cap");`
+     - In `claimWithAuthorization()`: `require(totalMinted + amount <= cap(), "Rygon: total minted exceeds cap");`
+   - In both cases, `totalMinted += amount;` occurs before `_mint()`. Neither `MINTER_ROLE`, `DEFAULT_ADMIN_ROLE`, nor `TIMELOCK` can bypass this check.
 
 ---
 
@@ -51,13 +54,14 @@ The audit scope is strictly limited to the three smart contracts located in `con
 | :--- | :--- | :--- |
 | `contracts/Rygon.sol` | OpenZeppelin ERC20, AccessControl, Pausable, EIP712 | Core utility token, 10B lifetime cap, gasless voucher claims |
 | `contracts/RygonGovernance.sol` | OpenZeppelin TimelockController | 48-hour timelock delay for privileged administrative operations |
-| `contracts/RygonMigrationDistributor.sol` | OpenZeppelin Ownable, Pausable, MerkleProof | Cryptographic 1:1 beta-to-mainnet migration distributor |
+| `contracts/RygonMigrationDistributor.sol` | OpenZeppelin Ownable, Pausable, MerkleProof | Cryptographic 1:1 beta-to-mainnet migration distributor (pre-funded token distribution) |
 
 ---
 
 ## Package Structure
 
-- `contracts/` — Frozen Solidity source files for Rygon Audit Candidate 2 (identical to Candidate 1)
+- `contracts/` — Frozen Solidity source files for Rygon Audit Candidate 3 (identical to Candidate 1 and Candidate 2)
+- `CANDIDATE_2_TO_3_DIFF.md` — Detailed report of Candidate 2 to Candidate 3 documentation corrections
 - `CANDIDATE_1_TO_2_DIFF.md` — Detailed comparison of Candidate 1 vs Candidate 2
 - `SCOPE.md` — Detailed functional scope and external integrations
 - `ARCHITECTURE.md` — Full system diagrams, component interactions, and data flows

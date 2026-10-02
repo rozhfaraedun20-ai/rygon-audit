@@ -1,12 +1,16 @@
-# Privileged Roles & Governance Handover — Rygon Candidate 2
+# Privileged Roles & Governance Handover — Rygon Candidate 3
 
 ## Role Definitions
 
 | Role | Identifier | Capabilities | Intended Mainnet Holder |
 | :--- | :--- | :--- | :--- |
-| `DEFAULT_ADMIN_ROLE` | `0x00...00` | Grants/revokes all roles, manages contract parameters | `RygonTimelock` (governed by 3-of-5 Multisig) |
-| `MINTER_ROLE` | `keccak256("MINTER_ROLE")` | Direct token minting & EIP-712 claim signing | Dedicated secure key management service / Timelock |
-| `PAUSER_ROLE` | `keccak256("PAUSER_ROLE")` | Instant emergency pause & unpause | Emergency Guardian (3-of-5 Multisig + designated signers) |
+| `DEFAULT_ADMIN_ROLE` | `0x00...00` | Grants/revokes all roles, manages contract parameters on `Rygon.sol` | `RygonTimelock` (governed by 3-of-5 Multisig) |
+| `MINTER_ROLE` | `keccak256("MINTER_ROLE")` | Direct token minting & EIP-712 claim signing on `Rygon.sol` | Dedicated secure key management service signer / Timelock |
+| `PAUSER_ROLE` | `keccak256("PAUSER_ROLE")` | Instant emergency pause & unpause on `Rygon.sol` | Emergency Guardian (3-of-5 Multisig + designated signers) |
+| `owner` (Distributor) | `Ownable` | Pause/unpause claims on `RygonMigrationDistributor.sol` | `RygonTimelock` |
+
+> **Crucial Architecture Distinction:**  
+> `RygonMigrationDistributor` does **NOT** hold `MINTER_ROLE`. It holds an escrow balance of pre-funded tokens and fulfills claims via `IERC20.transfer(account, amount)`. Furthermore, `RygonMigrationDistributor` does **NOT** use `PAUSER_ROLE`; its `pause()` and `unpause()` functions are strictly restricted to its `owner` (transferred to `RygonTimelock`).
 
 ---
 
@@ -31,8 +35,10 @@ On Base Mainnet, all administrative capabilities are placed behind the **RygonTi
 3. **Grant Admin to Timelock:** Deployer calls `rygon.grantRole(DEFAULT_ADMIN_ROLE, timelockAddress)`.
 4. **Grant Operational Roles:**
    - Deployer grants `PAUSER_ROLE` on `Rygon.sol` to Emergency Guardian.
-   - Deployer grants `MINTER_ROLE` on `Rygon.sol` to `RygonMigrationDistributor` (and/or dedicated signer).
-5. **Transfer Distributor Ownership:** Deployer calls `distributor.transferOwnership(timelockAddress)`.
+   - Deployer grants `MINTER_ROLE` on `Rygon.sol` to the dedicated backend claim signer (and optionally `RygonTimelock` for administrative batch mints within the 10B cap).
+5. **Fund Distributor & Transfer Ownership:**
+   - Pre-fund `RygonMigrationDistributor` with the exact verified token migration allocation via `mint()` or transfer.
+   - Deployer calls `distributor.transferOwnership(timelockAddress)`.
 6. **Deployer Role Renouncement:**
    - Deployer calls `rygon.renounceRole(DEFAULT_ADMIN_ROLE, deployerAddress)`.
    - Deployer calls `rygon.renounceRole(PAUSER_ROLE, deployerAddress)`.
