@@ -1,9 +1,9 @@
-# Audit Scope — Rygon Candidate 1
+# Audit Scope — Rygon Candidate 2
 
 ## In-Scope Smart Contracts
 
 ### 1. `contracts/Rygon.sol`
-- **Standard:** ERC-20, ERC20Capped, ERC20Burnable, ERC20Pausable, AccessControl, EIP712
+- **Inheritance:** `ERC20Capped`, `ERC20Burnable`, `ERC20Pausable`, `AccessControl`, `EIP712` (OpenZeppelin)
 - **Name:** Rygon
 - **Symbol:** RYG
 - **Decimals:** 18
@@ -25,6 +25,8 @@
 ### 3. `contracts/RygonMigrationDistributor.sol`
 - **Inheritance:** OpenZeppelin `Ownable`, `Pausable`
 - **Purpose:** Claims distribution for eligible Beta holders onto mainnet
+- **Claim Tracking:** Index-to-claimed boolean mapping (`mapping(uint256 => bool) private _claimed`)
+- **Merkle Verification:** OpenZeppelin `MerkleProof.verify` against single keccak256 leaf hash
 - **Key Methods:**
   - `claimMigration(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof)`
   - `isClaimed(uint256 index)`
@@ -37,5 +39,5 @@
 - Deployed Base Sepolia Beta contracts (`0x6283...` and `0x7B72...`)
 - Frontend application, PWA service worker, UI code
 - Supabase Edge Functions (`sponsor-gas`, `claim-mining-rewards`)
-- Third-party dependencies: OpenZeppelin Contracts v5.0.2
+- Third-party dependencies: OpenZeppelin Contracts v5.6.1
 - Base EVM Layer 2 consensus and rollup mechanics

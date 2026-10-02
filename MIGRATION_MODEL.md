@@ -1,4 +1,4 @@
-# Migration Model — Rygon Candidate 1
+# Migration Model — Rygon Candidate 2
 
 ## 1:1 Non-Double-Counting Migration Architecture
 
@@ -30,6 +30,7 @@ To protect the mainnet economy, the snapshot generation pipeline segregates the 
 
 $$\text{leaf} = \text{keccak256}(\text{abi.encodePacked}(\text{index}, \text{account}, \text{amount}))$$
 
-- Leaves are computed deterministically.
+- Leaves are computed deterministically using a single `keccak256` hash over packed `(index, account, amount)`.
 - Proofs are generated using sorted pair hashing to prevent branch ordering vulnerabilities.
 - Verification uses OpenZeppelin `MerkleProof.verify(merkleProof, merkleRoot, leaf)`.
+- Exactly-once claiming is enforced by recording the claimed index in an on-chain mapping: `mapping(uint256 => bool) private _claimed`.

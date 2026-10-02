@@ -1,4 +1,4 @@
-# Automated Test Results — Rygon Candidate 1
+# Automated Test Results — Rygon Candidate 2
 
 ## Hardhat Test Suite (78 / 78 PASSING)
 
@@ -13,7 +13,7 @@
     2. TimelockController Queue, Delay & Execution Rehearsal
       √ 2.1 Unauthorized user cannot schedule or queue an operation in Timelock
       √ 2.2 Proposer (Multisig) queues operation; early execution is strictly rejected
-      √ 2.3 Operation executes successfully after required delay (24 hours)
+      √ 2.3 Operation executes successfully after required delay (48 hours)
       √ 2.4 Cancellation works: Proposer can cancel a queued operation before execution
     3. Emergency Pause Design & Least Privilege Separation
       √ 3.1 Emergency Guardian can instantly freeze the token without timelock delay
@@ -37,8 +37,8 @@
     √ 6. Emergency pause halts claims and unpause restores them
 
   RYGON — RED TEAM PART 10: FUZZ & PROPERTY-BASED INVARIANT TESTING
-    √ PROPERTY 10.1: Conservation of totalMinted under arbitrary randomized mint/burn sequences (118ms)
-    √ PROPERTY 10.2: Merkle Tree claim-once property across 20 generated unique recipients (201ms)
+    √ PROPERTY 10.1: Conservation of totalMinted under arbitrary randomized mint/burn sequences (83ms)
+    √ PROPERTY 10.2: Merkle Tree claim-once property across 20 generated unique recipients (199ms)
     √ PROPERTY 10.3: Rapid toggling of pause/unpause preserves invariant state
 
   RYGON — RED TEAM PART 4: ADVERSARIAL SMART-CONTRACT TESTING
@@ -112,13 +112,10 @@
       √ handles approve and transferFrom correctly
       √ has 0 transfer tax (100% of sent tokens arrive at destination)
 
-  78 passing (4s)
+  78 passing (3s)
 ```
 
----
-
-## Migration Invariant Tests (22 / 22 PASSING)
-Verified via `scripts/testMigrationSuite.ts`: 100% pass across calculation, population segregation, signature verification, and database triggers.
-
-## Wallet Vault Security Tests (18 / 18 PASSING)
-Verified via `scripts/verifyVaultSecurity.ts`: PBKDF2 600,000 rounds, AES-GCM 256, memory clearing, zero plaintext leaks.
+## Summary of Verification
+- **Total Test Count:** 78 / 78 passing
+- **Timelock Delay Rehearsal:** Executed and passed at full **48 hours (172,800s)**
+- **Adversarial Invariant Checks:** 100% passing across fuzzing, replay attacks, front-running defenses, and supply boundaries.

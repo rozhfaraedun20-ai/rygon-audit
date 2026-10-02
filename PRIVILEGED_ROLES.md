@@ -1,4 +1,4 @@
-# Privileged Roles & Governance Handover — Rygon Candidate 1
+# Privileged Roles & Governance Handover — Rygon Candidate 2
 
 ## Role Definitions
 
@@ -15,22 +15,26 @@
 On Base Mainnet, all administrative capabilities are placed behind the **RygonTimelock** contract with an enforced delay of **48 hours (172,800 seconds)**:
 
 1. **Multisig Proposer:** The 3-of-5 Gnosis Safe Multisig proposes an administrative transaction.
-2. **Timelock Queue:** The operation is queued on-chain with a 48-hour delay.
+2. **Timelock Queue:** The operation is queued on-chain with a 48-hour delay (`172800` seconds).
 3. **Public Inspection Window:** The community and auditors observe the queued operation on-chain.
 4. **Execution:** After 48 hours, the operation can be executed.
 5. **Cancellation:** If a malicious or buggy transaction is proposed, signers can cancel it prior to execution.
 
 ---
 
-## Deployer EOA Role Renouncement Sequence
+## OpenZeppelin AccessControl Handover Procedure
 
-At mainnet deployment, the deployer EOA executes the following sequence:
-1. Deploy `Rygon.sol` (Deployer has Admin and Pauser roles; zero Minter role).
-2. Deploy `RygonTimelock.sol` with 48h delay, setting Multisig as Proposer/Executor.
-3. Grant `DEFAULT_ADMIN_ROLE` on `Rygon.sol` to `RygonTimelock`.
-4. Grant `PAUSER_ROLE` on `Rygon.sol` to Emergency Guardian.
-5. Grant `MINTER_ROLE` on `Rygon.sol` to dedicated server signer (with timelock as role admin).
-6. Renounce deployer's `DEFAULT_ADMIN_ROLE` on `Rygon.sol`.
-7. Renounce deployer's `PAUSER_ROLE` on `Rygon.sol`.
+`Rygon.sol` implements OpenZeppelin's standard `AccessControl`. At mainnet deployment, administrative handover is executed via the standard grant/revoke pattern:
 
-**Result:** Zero EOA custody of administrative privileges.
+1. **Deploy Token:** Deploy `Rygon.sol` (Deployer holds `DEFAULT_ADMIN_ROLE` and `PAUSER_ROLE`; zero `MINTER_ROLE`).
+2. **Deploy Timelock:** Deploy `RygonTimelock.sol` with 48h delay (`172800` seconds), setting Safe Multisig as Proposer/Executor and Timelock itself as admin.
+3. **Grant Admin to Timelock:** Deployer calls `rygon.grantRole(DEFAULT_ADMIN_ROLE, timelockAddress)`.
+4. **Grant Operational Roles:**
+   - Deployer grants `PAUSER_ROLE` on `Rygon.sol` to Emergency Guardian.
+   - Deployer grants `MINTER_ROLE` on `Rygon.sol` to `RygonMigrationDistributor` (and/or dedicated signer).
+5. **Transfer Distributor Ownership:** Deployer calls `distributor.transferOwnership(timelockAddress)`.
+6. **Deployer Role Renouncement:**
+   - Deployer calls `rygon.renounceRole(DEFAULT_ADMIN_ROLE, deployerAddress)`.
+   - Deployer calls `rygon.renounceRole(PAUSER_ROLE, deployerAddress)`.
+
+**Result:** Zero EOA custody of administrative privileges. `RygonTimelock` becomes the sole authoritative administrator.

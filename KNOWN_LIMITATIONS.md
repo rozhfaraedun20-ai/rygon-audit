@@ -1,4 +1,4 @@
-# Known Limitations & Trust Assumptions — Rygon Candidate 1
+# Known Limitations & Trust Assumptions — Rygon Candidate 2
 
 ## 1. Trust Assumptions
 
@@ -12,4 +12,4 @@
 
 - **Single Migration Snapshot:** The migration design is built around a single frozen snapshot block. Re-running the distributor with a new root requires deploying a new distributor contract.
 - **Client Vault Recovery:** If a user loses their 12+ character wallet passphrase and their 12-word seed phrase, client-side encryption mathematically prevents anyone (including administrators) from recovering their private keys.
-- **Timelock Delay Window:** Urgent administrative interventions (outside of Emergency Pause) are subject to the 48-hour delay. Emergency Pause can be executed immediately by the Emergency Guardian.
+- **Timelock Delay Window:** Urgent administrative interventions (outside of Emergency Pause) are subject to the 48-hour delay (`172800` seconds). Emergency Pause can be executed immediately by the Emergency Guardian.

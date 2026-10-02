@@ -1,4 +1,4 @@
-# System Architecture — Rygon Candidate 1
+# System Architecture — Rygon Candidate 2
 
 ## Architecture Overview
 
@@ -47,13 +47,16 @@ graph TD
 
 1. **Rygon Token (`Rygon.sol`):**
    - Core value transfer unit (`RYG`).
-   - Lifetime hard cap enforced at contract level.
+   - Lifetime hard cap enforced at contract level (`totalMinted <= cap()`).
    - Dual minting pathways: direct `mint()` for privileged systems (e.g. initial migration funding) and gasless `claimWithAuthorization()` via EIP-712 signatures.
+   - Access control governed via OpenZeppelin `AccessControl`.
 
 2. **Governance Timelock (`RygonGovernance.sol`):**
-   - Decouples admin role execution from instant EOA actions.
-   - Requires 48 hours for any privileged change to take effect.
+   - Decouples admin role execution from instant EOA actions using OpenZeppelin `TimelockController`.
+   - Requires 48 hours (`172800` seconds) for any privileged change to take effect.
 
 3. **Migration Distributor (`RygonMigrationDistributor.sol`):**
    - Facilitates 1:1 token entitlement distribution based on the frozen beta snapshot.
-   - Double-hashed leaf architecture preventing length-extension or pre-image collisions.
+   - Single keccak256 leaf hash architecture: `keccak256(abi.encodePacked(index, account, amount))`.
+   - Per-index claim tracking using an index-to-claimed boolean mapping (`mapping(uint256 => bool) private _claimed`).
+   - Emergency freeze capability via OpenZeppelin `Pausable` and `Ownable`.

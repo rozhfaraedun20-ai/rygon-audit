@@ -1,8 +1,8 @@
-# RYGON AUDIT CANDIDATE — NOT YET INDEPENDENTLY AUDITED
+# RYGON AUDIT CANDIDATE 2 — NOT YET INDEPENDENTLY AUDITED
 
 > [!WARNING]
-> **PRE-MAINNET SECURITY CANDIDATE — NOT YET INDEPENDENTLY AUDITED**  
-> This repository contains the frozen candidate smart contracts for **Rygon (RYG)** submitted for independent third-party security review. It has **NOT** yet received an independent third-party security audit.  
+> **PRE-MAINNET SECURITY CANDIDATE 2 — NOT YET INDEPENDENTLY AUDITED**  
+> This repository contains the candidate smart contracts for **Rygon (RYG)** submitted for independent third-party security review. Candidate 2 supersedes Candidate 1 for documentation corrections; smart contract bytecode and Solidity logic are 100% byte-for-byte identical to Candidate 1. It has **NOT** yet received an independent third-party security audit.  
 > **DO NOT DEPLOY TO MAINNET. DO NOT CREATE LIQUIDITY. DO NOT DEPOSIT REAL FUNDS.**
 
 ---
@@ -11,7 +11,7 @@
 
 - **Project / Brand:** Rygon
 - **Token Symbol:** RYG
-- **Audit Candidate:** Candidate 1 (`rygon-audit-candidate-1`)
+- **Audit Candidate:** Candidate 2 (`rygon-audit-candidate-2`)
 - **Target Network:** Base Mainnet (EVM / Chain ID 8453)
 - **Active Testnet Network:** Base Sepolia (EVM / Chain ID 84532)
 - **Date:** October 2026
@@ -49,23 +49,24 @@ The audit scope is strictly limited to the three smart contracts located in `con
 
 | Contract File | Standard / Base | Core Purpose |
 | :--- | :--- | :--- |
-| `contracts/Rygon.sol` | OpenZeppelin ERC20, AccessControl2Step, Pausable, EIP712 | Core utility token, 10B lifetime cap, gasless voucher claims |
+| `contracts/Rygon.sol` | OpenZeppelin ERC20, AccessControl, Pausable, EIP712 | Core utility token, 10B lifetime cap, gasless voucher claims |
 | `contracts/RygonGovernance.sol` | OpenZeppelin TimelockController | 48-hour timelock delay for privileged administrative operations |
-| `contracts/RygonMigrationDistributor.sol` | OpenZeppelin MerkleProof, ReentrancyGuard, Pausable | Cryptographic 1:1 beta-to-mainnet migration distributor |
+| `contracts/RygonMigrationDistributor.sol` | OpenZeppelin Ownable, Pausable, MerkleProof | Cryptographic 1:1 beta-to-mainnet migration distributor |
 
 ---
 
 ## Package Structure
 
-- `contracts/` — Frozen Solidity source files for Rygon Audit Candidate 1
+- `contracts/` — Frozen Solidity source files for Rygon Audit Candidate 2 (identical to Candidate 1)
+- `CANDIDATE_1_TO_2_DIFF.md` — Detailed comparison of Candidate 1 vs Candidate 2
 - `SCOPE.md` — Detailed functional scope and external integrations
 - `ARCHITECTURE.md` — Full system diagrams, component interactions, and data flows
 - `THREAT_MODEL.md` — STRIDE-based threat analysis and attack vectors evaluated
 - `SECURITY_INVARIANTS.md` — Mathematical invariants and formal test conditions
 - `PRIVILEGED_ROLES.md` — AccessControl separation and 3-of-5 Multisig governance handover
 - `MIGRATION_MODEL.md` — Non-double-counting 1:1 migration proof system
-- `REPRODUCIBILITY.md` — Exact compiler flags, dependencies, and build verification instructions
-- `TEST_RESULTS.md` — Hardhat test outputs, coverage summaries, and red team results
+- `REPRODUCIBILITY.md` — Exact compiler flags, dependencies (`@openzeppelin/contracts@5.6.1`), and build verification instructions
+- `TEST_RESULTS.md` — Hardhat test outputs (78/78 passing with 48h timelock rehearsal)
 - `REBRAND_DIFF.md` — Line-by-line diff against the original Kurd Coin audit candidate
 - `KNOWN_LIMITATIONS.md` — Explicit operational constraints, assumptions, and edge cases
 - `SHA256SUMS.txt` — Cryptographic checksums of all package files
@@ -79,7 +80,7 @@ The audit scope is strictly limited to the three smart contracts located in `con
 sha256sum -c SHA256SUMS.txt
 
 # 2. In a clean Hardhat project:
-npm install @openzeppelin/contracts@5.2.0
+npm install @openzeppelin/contracts@5.6.1
 npx hardhat compile
 ```
 For complete step-by-step reproduction instructions and automated test suites, see [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md).

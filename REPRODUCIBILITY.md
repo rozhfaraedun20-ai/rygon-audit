@@ -1,4 +1,4 @@
-# Reproducibility Guide — Rygon Candidate 1
+# Reproducibility Guide — Rygon Candidate 2
 
 ## Build Environment
 
@@ -8,6 +8,7 @@
 - **Solidity Compiler:** 0.8.27
 - **EVM Target:** cancun
 - **Optimizer:** Enabled (200 runs)
+- **OpenZeppelin Contracts Version:** `5.6.1` (exact installed version from `package-lock.json`)
 
 ---
 
@@ -30,7 +31,7 @@
    ```bash
    npx hardhat test
    ```
-   Expected output: `78 passing`
+   Expected output: `78 passing` (including full 48-hour timelock rehearsal)
 
 4. **Verify SHA-256 Checksums:**
    ```bash
